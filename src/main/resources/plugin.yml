@@ -1,0 +1,6 @@
+main: com.mydomain
+name: Core
+version: '1.0'
+description: A plugin starter
+load: POSTWORLD
+author: author
