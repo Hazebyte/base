@@ -26,6 +26,7 @@ public abstract class Base extends Component implements InventoryHolder {
         this.size = size;
         this.title = title;
         this.buttons = new ArrayList<>();
+        this.buttons.add(new Button[size.toInt()]);
     }
 
     @Override
@@ -79,6 +80,7 @@ public abstract class Base extends Component implements InventoryHolder {
             InventoryListener.getInstance().register(plugin);
         }
         Inventory inventory = Bukkit.createInventory(this, size.toInt(), title);
+        this.setProperty(entity.getUniqueId().toString(), page);
         Button[] barr = buttons.get(page);
         for (int i = 0; i < barr.length; i++) {
             if (barr[i] != null) inventory.setItem(i, barr[i].getItem());
@@ -87,6 +89,40 @@ public abstract class Base extends Component implements InventoryHolder {
             entity.openInventory(inventory);
 //            startTask(); TODO handle tasks
         }, 3);
+    }
+
+    public void nextPage(HumanEntity entity) {
+        int page = this.getProperty(entity.getUniqueId().toString(), 0) + 1;
+        changePage(entity, page);
+    }
+
+    public void previousPage(HumanEntity entity) {
+        int page = this.getProperty(entity.getUniqueId().toString(), 0) - 1;
+        changePage(entity, page);
+    }
+
+    private void changePage(HumanEntity entity, int page) {
+        if (entity.getOpenInventory().getTopInventory().getHolder() instanceof Base
+                && (page < buttons.size() && page >= 0)) {
+            this.setProperty(entity.getUniqueId().toString(), page);
+            Inventory inventory = entity.getOpenInventory().getTopInventory();
+            Button[] barr = buttons.get(page);
+            for (int i = 0; i < barr.length; i++) {
+                if (barr[i] != null) inventory.setItem(i, barr[i].getItem());
+                else inventory.setItem(i, null);
+            }
+        }
+    }
+
+    public boolean close(HumanEntity entity) {
+        if (entity.getOpenInventory().getTopInventory().getHolder() instanceof Base) {
+            Base origin = (Base) entity.getOpenInventory().getTopInventory().getHolder();
+            if (this.equals(origin)) {
+                Bukkit.getScheduler().runTaskLater(plugin, entity::closeInventory, 1);
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setIcon(int slot, Button button) {
@@ -110,7 +146,8 @@ public abstract class Base extends Component implements InventoryHolder {
 
     public void onInventoryClick(InventoryClickEvent event) {
         int slot = event.getRawSlot();
-        getIcon(0, slot).ifPresent((button) -> {
+        int page = this.getProperty(event.getWhoClicked().getUniqueId().toString(), 0);
+        getIcon(page, slot).ifPresent((button) -> {
             ButtonClickEvent bce = new ButtonClickEvent(
                     this,
                     button,
