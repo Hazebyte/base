@@ -1,12 +1,14 @@
 package com.hazebyte.base;
 
+import org.bukkit.entity.HumanEntity;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Component {
 
-    private Map<String, Object> properties;
-    private Map<String, Object> states;
+    protected Map<String, Object> properties;
+    protected Map<String, Object> states;
 
     public Component() {
         this.properties = new HashMap<>();
@@ -34,15 +36,15 @@ public abstract class Component {
         return this;
     }
 
-    public Component setState(String key, Object value) {
+    public Component setState(HumanEntity entity, String key, Object value) {
         Object original = getState(key);
         states.put(key, value);
         if (original != null && !original.equals(value)) {
             Lib.debug(String.format("State Update %s", key));
-            onUpdate(key);
+            onUpdate(entity, key);
         }
         return this;
     }
 
-    protected abstract void onUpdate(String state);
+    protected abstract void onUpdate(HumanEntity entity, String state);
 }
