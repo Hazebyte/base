@@ -14,6 +14,9 @@ import java.util.Optional;
 
 /**
  * An advanced base menu supporting pagination, in-game updates, properties, and state.
+ *
+ * State:
+ * A entity's UUID maps to the page that they are on.
  */
 public abstract class Base extends Component implements InventoryHolder {
 
@@ -33,12 +36,15 @@ public abstract class Base extends Component implements InventoryHolder {
      */
     private final List<Button[]> buttons;
 
+    private final List<Button> observers;
+
     public Base(JavaPlugin plugin, String title, Size size) {
         this.plugin = plugin;
         this.size = size;
         this.title = title;
         this.buttons = new ArrayList<>();
         this.buttons.add(new Button[size.toInt()]);
+        this.observers = new ArrayList<>();
     }
 
     @Override
@@ -127,7 +133,7 @@ public abstract class Base extends Component implements InventoryHolder {
         }
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             entity.openInventory(inventory);
-//            startTask(); TODO handle tasks
+            startTask(entity);
         }, 3);
     }
 
@@ -153,11 +159,16 @@ public abstract class Base extends Component implements InventoryHolder {
         changePage(entity, page);
     }
 
-    private void changePage(HumanEntity entity, int page) {
-        if (entity.getOpenInventory().getTopInventory().getHolder() instanceof Base
+    public void updatePage(HumanEntity entity) {
+        int page = this.getProperty(entity.getUniqueId().toString(), 0);
+        changePage(entity, page);
+    }
+
+    public void changePage(HumanEntity entity, int page) {
+        Inventory inventory = entity.getOpenInventory().getTopInventory();
+        if (inventory.getHolder() instanceof Base
                 && (page < buttons.size() && page >= 0)) {
             this.setProperty(entity.getUniqueId().toString(), page);
-            Inventory inventory = entity.getOpenInventory().getTopInventory();
             Button[] barr = buttons.get(page);
             for (int i = 0; i < barr.length; i++) {
                 if (barr[i] != null) inventory.setItem(i, barr[i].getItem());
@@ -181,6 +192,17 @@ public abstract class Base extends Component implements InventoryHolder {
             }
         }
         return false;
+    }
+
+    private void startTask(final HumanEntity entity) {
+        Bukkit.getScheduler().runTaskTimer(plugin, bukkitTask -> {
+            Inventory inventory = entity.getOpenInventory().getTopInventory();
+            if (inventory.getHolder() instanceof Base && inventory.getViewers().size() > 0) {
+                inventory.getViewers().forEach(this::update);
+            } else {
+                if (!bukkitTask.isCancelled()) bukkitTask.cancel();
+            }
+        }, 1, 1);
     }
 
     /**
@@ -207,6 +229,10 @@ public abstract class Base extends Component implements InventoryHolder {
         Button old = barr[slot];
         barr[slot] = button;
         return old;
+    }
+
+    public void attach(Button button) {
+        observers.add(button);
     }
 
     /**
@@ -254,11 +280,10 @@ public abstract class Base extends Component implements InventoryHolder {
      * Override this to specify what you want the inventory to do
      * on every tick.
      *
-     * TODO Add timer to handle #update
-     *
      * @param entity
      */
     public void update(HumanEntity entity) {
+        Lib.debug("Calling Update for " + entity.getName());
     }
 
     /**
@@ -273,7 +298,11 @@ public abstract class Base extends Component implements InventoryHolder {
      * @param key
      */
     @Override
-    protected void onUpdate(String key) {
-
+    protected void onUpdate(HumanEntity entity, String key) {
+        for (Button button : observers) {
+            button.setProperty("menu", this);
+            button.onUpdate(entity, key);
+        }
+        updatePage(entity);
     }
 }
