@@ -1,8 +1,15 @@
 package com.hazebyte.base;
 
 import com.hazebyte.base.event.ButtonClickEvent;
+import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -10,10 +17,12 @@ import java.util.function.Consumer;
  */
 public class Button extends Component {
 
+    private final ItemStack original;
     private ItemStack item;
     private final String DEFAULT = "default";
 
     public Button(ItemStack item) {
+        this.original = item;
         this.item = item;
     }
 
@@ -49,8 +58,48 @@ public class Button extends Component {
         return this.item;
     }
 
+    /**
+     * @param entity
+     * @param key
+     */
     @Override
-    protected void onUpdate(String state) {
+    protected void onUpdate(HumanEntity entity, String key) {
+        Base base = this.getProperty("menu");
+        if (base == null) return;
+
+        item = original.clone();
+        ItemMeta meta = item.getItemMeta();
+        for (Map.Entry<String, Object> entry : states.entrySet()) {
+            String K = entry.getKey();
+            String V = entry.getValue().toString();
+            if (meta.getDisplayName().contains(K)) {
+                meta.setDisplayName(meta.getDisplayName().replaceAll(K, V));
+            }
+            ListIterator<String> iter = meta.getLore().listIterator();
+            while (iter.hasNext()) {
+                String lore = iter.next();
+                if (lore.contains(K)) {
+                    iter.set(lore.replaceAll(K, V));
+                }
+            }
+        }
+
+        if (key.equals("%name")) {
+            String value = base.getState(key, this.getState(key, "Missing %name value"));
+            meta.setDisplayName(value);
+        }
+        if (key.equals("%lore")) {
+            List<String> arr = base.getState(key, this.getState(key, Arrays.asList("Missing %lore value")));
+            meta.setLore(arr);
+        }
+        if (key.equals("%amount")) {
+            int amount = base.getState(key, this.getState(key, 1));
+            item.setAmount(amount);
+        }
+        if (key.equals("%material")) {
+            Material material = Material.matchMaterial(base.getState(key, this.getState(key, "dirt")));
+            item.setType(material);
+        }
 
     }
 }
