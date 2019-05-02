@@ -1,5 +1,6 @@
 package com.hazebyte.base;
 
+import com.hazebyte.base.event.ButtonClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -12,13 +13,24 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- *
+ * An advanced base menu supporting pagination, in-game updates, properties, and state.
  */
 public abstract class Base extends Component implements InventoryHolder {
 
     protected JavaPlugin plugin;
+    /**
+     * The size of the inventory. This should be within limitations of
+     * one to six rows.
+     */
     private final Size size;
+    /**
+     * By Minecraft/Spigot limitations, this should be less than 32 characters
+     * otherwise calling {@link Base#open(HumanEntity)} will throw an exception.
+     */
     private final String title;
+    /**
+     * The stash of buttons.
+     */
     private final List<Button[]> buttons;
 
     public Base(JavaPlugin plugin, String title, Size size) {
@@ -49,10 +61,10 @@ public abstract class Base extends Component implements InventoryHolder {
         if (!(base.getTitle().equals(this.getTitle()))) {
             return false;
         }
-        if (!(base.getSize().equals(this.getSize())) {
+        if (!(base.getSize().equals(this.getSize()))) {
             return false;
         }
-        if (!(this.buttons.size() == base.buttons.size()) {
+        if (!(this.buttons.size() == base.buttons.size())) {
             return false;
         }
         return true;
@@ -65,10 +77,20 @@ public abstract class Base extends Component implements InventoryHolder {
         return builder.toString();
     }
 
+    /**
+     * Returns the title string that will be put upon an inventory.
+     *
+     * @return the title of the inventory.
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Returns the size of the inventory. Inventories should have at minimum one row
+     * and at max six rows.
+     * @return the size of the inventory.
+     */
     public Size getSize() {
         return size;
     }
@@ -78,10 +100,21 @@ public abstract class Base extends Component implements InventoryHolder {
         return Bukkit.createInventory(this, size.toInt(), title);
     }
 
+    /**
+     * Opens the inventory for the entity. This will default to the first page of Base.
+     * @param entity the entity to open the inventory for.
+     */
     public void open(HumanEntity entity) {
         open(entity, 0);
     }
 
+    /**
+     * Opens the inventory for the entity with a specific page number.
+     * This caches page numbers for the inventory which may be used to see
+     * the page number of individual entities.
+     * @param entity the entity to open the inventory for.
+     * @param page the page to initialize the items.
+     */
     public void open(HumanEntity entity, int page) {
         if (!(InventoryListener.getInstance().registered())) {
             InventoryListener.getInstance().register(plugin);
@@ -98,11 +131,23 @@ public abstract class Base extends Component implements InventoryHolder {
         }, 3);
     }
 
+    /**
+     * Opens the next page for the entity. This will reuse the inventory that is already
+     * open. Ensure that this is called within a {@link Base} otherwise
+     * nothing will happen.
+     * @param entity the entity to switch pages.
+     */
     public void nextPage(HumanEntity entity) {
         int page = this.getProperty(entity.getUniqueId().toString(), 0) + 1;
         changePage(entity, page);
     }
 
+    /**
+     * Opens the previous page for the entity. This will reuse the inventory that is already
+     * open. Ensure that this is called within a {@link Base} otherwise
+     * nothing will happen.
+     * @param entity the entity to switch pages
+     */
     public void previousPage(HumanEntity entity) {
         int page = this.getProperty(entity.getUniqueId().toString(), 0) - 1;
         changePage(entity, page);
@@ -121,6 +166,12 @@ public abstract class Base extends Component implements InventoryHolder {
         }
     }
 
+    /**
+     * Closes the {@link Base} for the entity. This will check that the inventory matches
+     * the call.
+     * @param entity
+     * @return true if the inventory should be closed, false otherwise
+     */
     public boolean close(HumanEntity entity) {
         if (entity.getOpenInventory().getTopInventory().getHolder() instanceof Base) {
             Base origin = (Base) entity.getOpenInventory().getTopInventory().getHolder();
@@ -132,18 +183,38 @@ public abstract class Base extends Component implements InventoryHolder {
         return false;
     }
 
-    public void setIcon(int slot, Button button) {
-        setIcon(0, slot, button);
+    /**
+     * See {@link #setIcon(int, int, Button)}
+     */
+    public Button setIcon(int slot, Button button) {
+        return setIcon(0, slot, button);
     }
 
-    public void setIcon(int page, int slot, Button button) {
+    /**
+     * Sets the icon for the Base. The slot should be within the size limit.
+     * The button may be null.
+     *
+     * @param page   the page to set the icon for
+     * @param slot   the slot at which this should appear
+     * @param button see {@link Button}
+     * @return the old button that was at the page and slot
+     */
+    public Button setIcon(int page, int slot, Button button) {
         while (page >= buttons.size()) {
             buttons.add(new Button[size.toInt()]);
         }
         Button[] barr = buttons.get(page);
+        Button old = barr[slot];
         barr[slot] = button;
+        return old;
     }
 
+    /**
+     * Returns the button at the page and slot.
+     * @param page
+     * @param slot
+     * @return {@link Button}
+     */
     public Optional<Button> getIcon(int page, int slot) {
         if (page < buttons.size()) {
             return Optional.ofNullable(buttons.get(page)[slot]);
@@ -151,6 +222,12 @@ public abstract class Base extends Component implements InventoryHolder {
         return null;
     }
 
+    /**
+     * Called when the inventory is clicked. This will call broadcast a ButtonClickEvent and
+     * run any actions if the button is valid.
+     *
+     * @param event
+     */
     public void onInventoryClick(InventoryClickEvent event) {
         int slot = event.getRawSlot();
         int page = this.getProperty(event.getWhoClicked().getUniqueId().toString(), 0);
@@ -177,6 +254,8 @@ public abstract class Base extends Component implements InventoryHolder {
      * Override this to specify what you want the inventory to do
      * on every tick.
      *
+     * TODO Add timer to handle #update
+     *
      * @param entity
      */
     public void update(HumanEntity entity) {
@@ -188,6 +267,8 @@ public abstract class Base extends Component implements InventoryHolder {
      * <p>
      * Newly opened inventories and currently opened inventories
      * should all have the updated state
+     *
+     * TODO update keys
      *
      * @param key
      */

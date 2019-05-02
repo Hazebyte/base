@@ -1,10 +1,14 @@
 package com.hazebyte.base;
 
+/**
+ * Represents an inventory size.
+ */
 public class Size {
 
     private int size;
 
     private Size(int rows) {
+        if (rows < 0 || rows > 6) throw new IndexOutOfBoundsException("The number of rows should be between [0, 6]");
         this.size = rows * 9;
     }
 

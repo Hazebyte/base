@@ -1,5 +1,7 @@
-package com.hazebyte.base;
+package com.hazebyte.base.event;
 
+import com.hazebyte.base.Base;
+import com.hazebyte.base.Button;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
