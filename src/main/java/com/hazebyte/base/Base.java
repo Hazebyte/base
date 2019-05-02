@@ -34,6 +34,7 @@ public abstract class Base extends Component implements InventoryHolder {
         int hash = 7;
         hash = 31 * hash + (title == null ? 0 : title.hashCode());
         hash = 31 * hash + (size == null ? 0 : size.hashCode());
+        hash = 31 * hash + buttons.size();
         return hash;
     }
 
@@ -48,7 +49,13 @@ public abstract class Base extends Component implements InventoryHolder {
         if (!(base.getTitle().equals(this.getTitle()))) {
             return false;
         }
-        return base.getSize().equals(this.getSize());
+        if (!(base.getSize().equals(this.getSize())) {
+            return false;
+        }
+        if (!(this.buttons.size() == base.buttons.size()) {
+            return false;
+        }
+        return true;
     }
 
     @Override
