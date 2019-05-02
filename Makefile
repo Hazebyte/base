@@ -1,7 +1,9 @@
-all: clean build
+all: clean build publish deploy
 build:
 	./gradlew build
 deploy: build
-	echo skipping
+	echo
+publish: build
+	./gradlew publishToMavenLocal
 clean:
 	./gradlew clean

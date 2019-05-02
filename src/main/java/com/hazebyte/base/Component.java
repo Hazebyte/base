@@ -37,7 +37,7 @@ public abstract class Component {
     public Component setState(String key, Object value) {
         Object original = getState(key);
         states.put(key, value);
-        if (original == null || !original.equals(value)) { // If state has not yet been set or has been changed
+        if (original != null && !original.equals(value)) {
             Lib.debug(String.format("State Update %s", key));
             onUpdate(key);
         }
