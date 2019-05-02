@@ -23,7 +23,7 @@ public class Button extends Component {
 
     public Button(ItemStack item) {
         this.original = item;
-        this.item = item;
+        this.item = item.clone();
     }
 
     public void runDefault(ButtonClickEvent bce) {
@@ -67,22 +67,7 @@ public class Button extends Component {
         Base base = this.getProperty("menu");
         if (base == null) return;
 
-        item = original.clone();
-        ItemMeta meta = item.getItemMeta();
-        for (Map.Entry<String, Object> entry : states.entrySet()) {
-            String K = entry.getKey();
-            String V = entry.getValue().toString();
-            if (meta.getDisplayName().contains(K)) {
-                meta.setDisplayName(meta.getDisplayName().replaceAll(K, V));
-            }
-            ListIterator<String> iter = meta.getLore().listIterator();
-            while (iter.hasNext()) {
-                String lore = iter.next();
-                if (lore.contains(K)) {
-                    iter.set(lore.replaceAll(K, V));
-                }
-            }
-        }
+        ItemMeta meta = original.clone().getItemMeta();
 
         if (key.equals("%name")) {
             String value = base.getState(key, this.getState(key, "Missing %name value"));
@@ -101,5 +86,30 @@ public class Button extends Component {
             item.setType(material);
         }
 
+        for (Map.Entry<String, Object> entry : states.entrySet()) {
+            replace(meta, entry);
+        }
+        for (Map.Entry<String, Object> entry : base.states.entrySet()) {
+            replace(meta, entry);
+        }
+        item.setItemMeta(meta);
+        Lib.debug(item);
+    }
+
+    private void replace(ItemMeta meta, Map.Entry<String, Object> entry) {
+        String K = entry.getKey();
+        String V = entry.getValue().toString();
+        if (meta.getDisplayName().contains(K)) {
+            meta.setDisplayName(meta.getDisplayName().replaceAll(K, V));
+        }
+        if (meta.getLore() != null) {
+            ListIterator<String> iter = meta.getLore().listIterator();
+            while (iter != null && iter.hasNext()) {
+                String lore = iter.next();
+                if (lore.contains(K)) {
+                    iter.set(lore.replaceAll(K, V));
+                }
+            }
+        }
     }
 }
