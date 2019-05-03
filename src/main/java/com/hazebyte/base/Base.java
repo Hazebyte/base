@@ -1,6 +1,7 @@
 package com.hazebyte.base;
 
 import com.hazebyte.base.event.ButtonClickEvent;
+import com.hazebyte.base.util.Lib;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -229,6 +230,16 @@ public abstract class Base extends Component implements InventoryHolder {
         Button old = barr[slot];
         barr[slot] = button;
         return old;
+    }
+
+    public List<Button> setIcon(int[] pages, int slot, Button button) {
+        List<Button> buttons = new ArrayList<>();
+        Button tmp = null;
+        for (int page : pages) {
+            if ((tmp = setIcon(page, slot, button)) != null)
+                buttons.add(tmp);
+        }
+        return buttons;
     }
 
     public void attach(Button button) {

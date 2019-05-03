@@ -1,5 +1,6 @@
 package com.hazebyte.base;
 
+import com.hazebyte.base.util.Lib;
 import org.bukkit.entity.HumanEntity;
 
 import java.util.HashMap;

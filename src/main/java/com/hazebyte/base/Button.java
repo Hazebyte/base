@@ -93,7 +93,6 @@ public class Button extends Component {
             replace(meta, entry);
         }
         item.setItemMeta(meta);
-        Lib.debug(item);
     }
 
     private void replace(ItemMeta meta, Map.Entry<String, Object> entry) {

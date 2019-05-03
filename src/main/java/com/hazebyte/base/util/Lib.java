@@ -1,4 +1,4 @@
-package com.hazebyte.base;
+package com.hazebyte.base.util;
 
 import java.util.logging.Logger;
 
