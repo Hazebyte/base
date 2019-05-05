@@ -1,6 +1,6 @@
 # base
 
-base is a library to build interfaces. It currently has support for paginated inventories with eventful buttons.
+base is a bukkit/spigot library to build interfaces. It currently has support for paginated inventories with eventful buttons.
 
 * All interfaces are components that manage their own state
 * Build components that are OOP and encapsulated
