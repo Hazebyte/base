@@ -1,5 +1,6 @@
 package com.hazebyte.base;
 
+import com.google.common.base.Preconditions;
 import com.hazebyte.base.event.ButtonClickEvent;
 import com.hazebyte.base.util.Lib;
 import org.bukkit.Bukkit;
@@ -40,6 +41,9 @@ public abstract class Base extends Component implements InventoryHolder {
     private final List<Button> observers;
 
     public Base(JavaPlugin plugin, String title, Size size) {
+        Preconditions.checkNotNull(plugin, "Plugin is null");
+        Preconditions.checkNotNull(title, "Title is null");
+        Preconditions.checkNotNull(size, "Size is null");
         this.plugin = plugin;
         this.size = size;
         this.title = title;
@@ -234,7 +238,7 @@ public abstract class Base extends Component implements InventoryHolder {
 
     public List<Button> setIcon(int[] pages, int slot, Button button) {
         List<Button> buttons = new ArrayList<>();
-        Button tmp = null;
+        Button tmp;
         for (int page : pages) {
             if ((tmp = setIcon(page, slot, button)) != null)
                 buttons.add(tmp);

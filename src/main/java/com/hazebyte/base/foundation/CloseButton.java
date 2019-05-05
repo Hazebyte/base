@@ -5,6 +5,9 @@ import com.hazebyte.base.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Representing a button that closes the inventory.
+ */
 public class CloseButton extends Button {
 
     private static final ItemStack DEFAULT = new ItemBuilder(Material.matchMaterial("RECORD_12", true))

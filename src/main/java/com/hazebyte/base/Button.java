@@ -1,5 +1,6 @@
 package com.hazebyte.base;
 
+import com.google.common.base.Preconditions;
 import com.hazebyte.base.event.ButtonClickEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -21,7 +22,13 @@ public class Button extends Component {
     private ItemStack item;
     private final String DEFAULT = "default";
 
+    /**
+     * Creates a button with a item icon.
+     *
+     * @throws NullPointerException if the item is null
+     */
     public Button(ItemStack item) {
+        Preconditions.checkNotNull(item);
         this.original = item;
         this.item = item.clone();
     }
@@ -47,10 +54,14 @@ public class Button extends Component {
     /**
      * Sets an action for a specific state. This supports all click types.
      * See {@link org.bukkit.event.inventory.ClickType}
+     *
+     * @throws NullPointerException if action is null.
+     *
      * @param action
      * @param consumer
      */
     public void setAction(String action, Consumer<ButtonClickEvent> consumer) {
+        Preconditions.checkNotNull(action, "Action provided is null");
         setProperty(action, consumer);
     }
 

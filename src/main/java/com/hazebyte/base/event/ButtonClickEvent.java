@@ -10,6 +10,9 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.Inventory;
 
+/**
+ * Represents an event where a button was clicked.
+ */
 public class ButtonClickEvent extends Event implements Cancellable {
 
     private HumanEntity entity;
