@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class NextButton extends Button {
 
-    private static final ItemStack DEFAULT = new ItemBuilder(Material.matchMaterial("ARROW", true))
+    private static final ItemStack DEFAULT = new ItemBuilder(Material.ARROW)
             .displayName("&l&6Next Page")
             .lore("", "&eClick here to go to the next page.")
             .asItemStack();

@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CloseButton extends Button {
 
-    private static final ItemStack DEFAULT = new ItemBuilder(Material.matchMaterial("RECORD_12", true))
+    private static final ItemStack DEFAULT = new ItemBuilder(Material.CAULDRON)
             .displayName("&l&4Close Button")
             .lore("", "&eClick here to close the inventory.")
             .asItemStack();

@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class PreviousButton extends Button {
 
-    private static final ItemStack DEFAULT = new ItemBuilder(Material.matchMaterial("FENCE", true))
+    private static final ItemStack DEFAULT = new ItemBuilder(Material.REDSTONE)
             .displayName("&l&6Previous Page")
             .lore("", "&eClick here to go to the previous page.")
             .asItemStack();
