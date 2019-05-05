@@ -48,7 +48,7 @@ public abstract class Component {
 
     public Component setState(HumanEntity entity, String key, Object value) {
         Object original = getState(key);
-        if (original != null && !original.equals(value)) {
+        if (original == null || !original.equals(value)) {
             StateChangeEvent event = new StateChangeEvent(this, key, value, original, entity);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
