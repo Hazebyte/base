@@ -107,7 +107,7 @@ public class Button extends Component {
     }
 
     private void replace(ItemMeta meta, Map.Entry<String, Object> entry) {
-        String K = entry.getKey();
+        String K = "%".concat(entry.getKey());
         String V = entry.getValue().toString();
         if (meta.getDisplayName().contains(K)) {
             meta.setDisplayName(meta.getDisplayName().replaceAll(K, V));
