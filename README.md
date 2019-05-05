@@ -63,7 +63,7 @@ public class TestPage extends Base {
 ## Contribution
 
 This project is a work in progress. There are still many places to be perfected. 
-Any suggestions or contributions is welcomed!
+Any suggestions or contributions are welcomed!
 
 ## Reference (todo)
 
