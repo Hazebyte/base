@@ -7,17 +7,15 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * Represents a state that will be changed.
+ * Represents a state that will be removed.
  */
-public class StateChangeEvent extends Event implements Cancellable {
+public class StateRemoveEvent extends Event implements Cancellable {
 
-    private Component origin;
+    private Component component;
 
     private String key;
 
-    private Object oldValue;
-
-    private Object newValue;
+    private String oldValue;
 
     private HumanEntity entity;
 
@@ -25,12 +23,27 @@ public class StateChangeEvent extends Event implements Cancellable {
 
     private static final HandlerList handlerList = new HandlerList();
 
-    public StateChangeEvent(Component origin, String key, Object newValue, Object oldValue, HumanEntity entity) {
-        this.origin = origin;
+    public StateRemoveEvent(Component component, String key, String oldValue, HumanEntity entity) {
+        this.component = component;
         this.key = key;
         this.oldValue = oldValue;
-        this.newValue = newValue;
         this.entity = entity;
+    }
+
+    public Component getComponent() {
+        return component;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getOldValue() {
+        return oldValue;
+    }
+
+    public HumanEntity getEntity() {
+        return entity;
     }
 
     @Override
@@ -40,27 +53,7 @@ public class StateChangeEvent extends Event implements Cancellable {
 
     @Override
     public void setCancelled(boolean cancel) {
-        this.cancelled = cancel;
-    }
-
-    public Component getOrigin() {
-        return origin;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public Object getOldValue() {
-        return oldValue;
-    }
-
-    public Object getNewValue() {
-        return newValue;
-    }
-
-    public HumanEntity getEntity() {
-        return entity;
+        this.cancelled = true;
     }
 
     @Override

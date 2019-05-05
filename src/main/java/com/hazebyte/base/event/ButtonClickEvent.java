@@ -17,6 +17,7 @@ public class ButtonClickEvent extends Event implements Cancellable {
 
     private HumanEntity entity;
     private Base origin;
+    private Button button;
     private InventoryAction action;
     private ClickType click;
     private int slot;
@@ -24,10 +25,11 @@ public class ButtonClickEvent extends Event implements Cancellable {
     private Inventory clickedInventory;
     private boolean cancelled;
 
-    private static HandlerList handlerList = new HandlerList();
+    private static final HandlerList handlerList = new HandlerList();
 
     public ButtonClickEvent(Base base, Button button, HumanEntity entity, InventoryAction action, ClickType click, int slot, int rawSlot, Inventory clickedInventory) {
         this.origin = base;
+        this.button = button;
         this.entity = entity;
         this.action = action;
         this.click = click;
@@ -51,12 +53,20 @@ public class ButtonClickEvent extends Event implements Cancellable {
         return handlerList;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlerList;
+    }
+
     public HumanEntity getEntity() {
         return entity;
     }
 
     public Base getOrigin() {
         return origin;
+    }
+
+    public Button getButton() {
+        return button;
     }
 
     public InventoryAction getAction() {
@@ -78,5 +88,4 @@ public class ButtonClickEvent extends Event implements Cancellable {
     public Inventory getClickedInventory() {
         return clickedInventory;
     }
-
 }

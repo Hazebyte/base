@@ -302,15 +302,8 @@ public abstract class Base extends Component implements InventoryHolder {
     }
 
     /**
-     * When a player calls setState, this should handle and
-     * update all items with the same key to the new value.
-     * <p>
-     * Newly opened inventories and currently opened inventories
-     * should all have the updated state
-     *
-     * TODO update keys
-     *
-     * @param key
+     * Called when setState is triggered. This should handle
+     * and update all items that contain the same key.
      */
     @Override
     protected void onUpdate(HumanEntity entity, String key) {
