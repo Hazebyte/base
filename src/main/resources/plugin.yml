@@ -1,6 +1,10 @@
-main: com.mydomain
-name: Core
-version: '1.0'
-description: A plugin starter
+main: com.hazebyte.example.Core
+name: BaseTest
+version: '0.0.0'
+description: An example plugin for the library, Base
 load: POSTWORLD
-author: author
+author: imWillX
+commands:
+  base:
+    description: Example command
+    usage: /base
