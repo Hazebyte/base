@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 
-group 'com.hazebyte.base'
+group 'com.hazebyte'
 version '0.0.0'
 
 sourceCompatibility = 1.8
