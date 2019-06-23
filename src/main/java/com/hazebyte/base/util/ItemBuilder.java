@@ -179,8 +179,10 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setGlowing(boolean glowing) {
-        this.unsafeEnchant(this.itemStack.getType() != Material.BOW ? Enchantment.ARROW_INFINITE : Enchantment.LUCK, 10);
-        this.flag(ItemFlag.HIDE_ENCHANTS);
+        if (glowing) {
+            this.unsafeEnchant(this.itemStack.getType() != Material.BOW ? Enchantment.ARROW_INFINITE : Enchantment.LUCK, 10);
+            this.flag(ItemFlag.HIDE_ENCHANTS);
+        }
         return this;
     }
 
