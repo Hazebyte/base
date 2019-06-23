@@ -11,7 +11,7 @@ base is a bukkit/spigot library to build interfaces. It currently has support fo
 
 ## Getting Started
 
-Add Base to your project repository. You may do this using the project jar or using Gradle & Maven (todo)
+Add Base to your project repository. You may do this using the project jar or using Gradle & Maven.
 
 Building the jar
 ```
@@ -19,6 +19,20 @@ git clone https://github.com/Hazebyte/Base.git base
 cd base
 make
 cp /build/lib/base-0.0.0.jar my-folder
+```
+
+Gradle
+```
+repositories {
+    // ...
+    maven { url 'https://jitpack.io' }
+}
+
+
+dependencies {
+    // ...
+    compile "com.github.Hazebyte:base:dev-SNAPSHOT"
+}
 ```
 
 **[Example Project](https://github.com/Hazebyte/base/blob/master/src/main/java/com/hazebyte/example/)**
