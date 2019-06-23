@@ -1,6 +1,7 @@
 // https://www.spigotmc.org/wiki/spigot-gradle/
 plugins {
     id 'java'
+    id 'maven'
     id 'maven-publish'
 }
 
