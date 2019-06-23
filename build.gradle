@@ -20,11 +20,14 @@ repositories {
         }
     }
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT' // The Spigot API with no shadowing. Requires the OSS repo.
     compileOnly 'org.bukkit:bukkit:1.13.2-R0.1-SNAPSHOT' // The Bukkit API with no shadowing.
+
+    implementation 'com.github.Hazebyte:base:dev-SNAPSHOT'
 }
 
 publishing {
