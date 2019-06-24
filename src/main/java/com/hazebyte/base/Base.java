@@ -2,6 +2,9 @@ package com.hazebyte.base;
 
 import com.google.common.base.Preconditions;
 import com.hazebyte.base.event.ButtonClickEvent;
+import com.hazebyte.base.foundation.CloseButton;
+import com.hazebyte.base.foundation.NextButton;
+import com.hazebyte.base.foundation.PreviousButton;
 import com.hazebyte.base.util.Lib;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
@@ -11,6 +14,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -127,19 +131,54 @@ public abstract class Base extends Component implements InventoryHolder {
      * @param page the page to initialize the items.
      */
     public void open(HumanEntity entity, int page) {
+        this.open(entity, page, false);
+    }
+
+    /**
+     * Opens the inventory for the entity with a specific page number.
+     * This caches page numbers for the inventory which may be used to see
+     * the page number of individual entities.
+     *
+     * @param entity            the entity to open the inventory for.
+     * @param page              the page to initialize the items.
+     * @param addDefaultButtons whether to add default buttons.
+     */
+    public void open(HumanEntity entity, int page, boolean addDefaultButtons) {
         if (!(InventoryListener.getInstance().registered())) {
             InventoryListener.getInstance().register(plugin);
         }
+        if (addDefaultButtons) addDefaultButtons();
+
         Inventory inventory = Bukkit.createInventory(this, size.toInt(), title);
         this.setProperty(entity.getUniqueId().toString(), page);
         Button[] barr = buttons.get(page);
         for (int i = 0; i < barr.length; i++) {
             if (barr[i] != null) inventory.setItem(i, barr[i].getItem());
         }
+
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             entity.openInventory(inventory);
             startTask(entity);
         }, 3);
+    }
+
+    /**
+     * Automatically adds in previous, next, and close buttons
+     */
+    public void addDefaultButtons() {
+        int pages = this.buttons.size();
+        LinkedList<Integer> enumerated = new LinkedList<>();
+        for (int i = 0; i < pages; i++) enumerated.add(i);
+
+        setIcon(enumerated.toArray(new Integer[enumerated.size()]), size.toInt() - Var.FROM_CENTER, new CloseButton());
+        if (pages > 0) {
+            int first = enumerated.removeFirst();
+            setIcon(enumerated.toArray(new Integer[enumerated.size()]), size.toInt() - Var.LEFT_CENTER, new PreviousButton());
+            enumerated.addFirst(first);
+
+            int last = enumerated.removeLast();
+            setIcon(enumerated.toArray(new Integer[enumerated.size()]), size.toInt() - Var.RIGHT_CENTER, new NextButton());
+        }
     }
 
     /**
@@ -234,6 +273,12 @@ public abstract class Base extends Component implements InventoryHolder {
         Button old = barr[slot];
         barr[slot] = button;
         return old;
+    }
+
+    public List<Button> setIcon(Integer[] pages, int slot, Button button) {
+        int[] copy = new int[pages.length];
+        for (int i = 0; i < copy.length; i++) copy[i] = pages[i];
+        return this.setIcon(copy, slot, button);
     }
 
     public List<Button> setIcon(int[] pages, int slot, Button button) {
