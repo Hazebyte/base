@@ -23,17 +23,34 @@ cp /build/lib/base-0.0.0.jar my-folder
 
 Gradle
 ```
-repositories {
-    // ...
-    maven { url 'https://jitpack.io' }
-}
+    repositories {
+        // ...
+        maven { url 'https://jitpack.io' }
+    }
 
 
-dependencies {
-    // ...
-    compile "com.github.Hazebyte:base:dev-SNAPSHOT"
-}
+    dependencies {
+        // ...
+        compile "com.github.Hazebyte:base:0.0.0"
+    }
 ```
+
+Maven
+```
+	<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+    
+    <dependency>
+	    <groupId>com.github.hazebyte</groupId>
+	    <artifactId>base</artifactId>
+	    <version>0.0.0</version>
+	</dependency>
+```
+
 
 **[Example Project](https://github.com/Hazebyte/base/blob/master/src/main/java/com/hazebyte/example/)**
 
@@ -79,6 +96,6 @@ public class TestPage extends Base {
 This project is a work in progress. There are still many places to be perfected. 
 Any suggestions or contributions are welcomed!
 
-## Reference (todo)
+## Reference
 
-JavaDoc
+https://javadoc.jitpack.io/com/github/Hazebyte/base/0.0.0/javadoc/
