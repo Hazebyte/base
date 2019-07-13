@@ -358,4 +358,14 @@ public abstract class Base extends Component implements InventoryHolder {
         }
         updatePage(entity);
     }
+
+    /**
+     * Checks if the slot is in the range of a base inventory.
+     *
+     * @param rawSlot
+     * @return true if the slot is in the range of a base inventory, false otherwise
+     */
+    public boolean is(int rawSlot) {
+        return rawSlot < size.toInt();
+    }
 }
