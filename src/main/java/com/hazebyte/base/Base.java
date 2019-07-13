@@ -27,33 +27,51 @@ import java.util.Optional;
 public abstract class Base extends Component implements InventoryHolder {
 
     protected JavaPlugin plugin;
+
     /**
      * The size of the inventory. This should be within limitations of
      * one to six rows.
      */
     private final Size size;
+
     /**
      * By Minecraft/Spigot limitations, this should be less than 32 characters
      * otherwise calling {@link Base#open(HumanEntity)} will throw an exception.
      */
     private final String title;
+
     /**
-     * The stash of buttons.
+     * The stash of pages.
      */
-    private final List<Button[]> buttons;
+    private final List<Button[]> pages;
 
     private final List<Button> observers;
 
+    /**
+     * Have we called {@link #addDefaultButtons()} to add close, next, previous pages.
+     */
+    private boolean hasDefaultButtons;
+
+    /**
+     * Used for automatic positioning
+     */
+    private int raw = 0;
+
     public Base(JavaPlugin plugin, String title, Size size) {
+        this(plugin, title, size, true);
+    }
+
+    public Base(JavaPlugin plugin, String title, Size size, boolean hasDefaultButtons) {
         Preconditions.checkNotNull(plugin, "Plugin is null");
         Preconditions.checkNotNull(title, "Title is null");
         Preconditions.checkNotNull(size, "Size is null");
         this.plugin = plugin;
         this.size = size;
         this.title = title;
-        this.buttons = new ArrayList<>();
-        this.buttons.add(new Button[size.toInt()]);
+        this.pages = new ArrayList<>();
+        this.pages.add(new Button[size.toInt()]);
         this.observers = new ArrayList<>();
+        this.hasDefaultButtons = hasDefaultButtons; // Calls #addDefaultButtons on open to perform calculations
     }
 
     @Override
@@ -61,7 +79,7 @@ public abstract class Base extends Component implements InventoryHolder {
         int hash = 7;
         hash = 31 * hash + (title == null ? 0 : title.hashCode());
         hash = 31 * hash + (size == null ? 0 : size.hashCode());
-        hash = 31 * hash + buttons.size();
+        hash = 31 * hash + pages.size();
         return hash;
     }
 
@@ -79,7 +97,7 @@ public abstract class Base extends Component implements InventoryHolder {
         if (!(base.getSize().equals(this.getSize()))) {
             return false;
         }
-        if (!(this.buttons.size() == base.buttons.size())) {
+        if (!(this.pages.size() == base.pages.size())) {
             return false;
         }
         return true;
@@ -127,31 +145,19 @@ public abstract class Base extends Component implements InventoryHolder {
      * Opens the inventory for the entity with a specific page number.
      * This caches page numbers for the inventory which may be used to see
      * the page number of individual entities.
-     * @param entity the entity to open the inventory for.
-     * @param page the page to initialize the items.
-     */
-    public void open(HumanEntity entity, int page) {
-        this.open(entity, page, false);
-    }
-
-    /**
-     * Opens the inventory for the entity with a specific page number.
-     * This caches page numbers for the inventory which may be used to see
-     * the page number of individual entities.
      *
      * @param entity            the entity to open the inventory for.
      * @param page              the page to initialize the items.
-     * @param addDefaultButtons whether to add default buttons.
      */
-    public void open(HumanEntity entity, int page, boolean addDefaultButtons) {
+    public void open(HumanEntity entity, int page) {
         if (!(InventoryListener.getInstance().registered())) {
             InventoryListener.getInstance().register(plugin);
         }
-        if (addDefaultButtons) addDefaultButtons();
+        if (hasDefaultButtons) addDefaultButtons();
 
         Inventory inventory = Bukkit.createInventory(this, size.toInt(), title);
         this.setProperty(entity.getUniqueId().toString(), page);
-        Button[] barr = buttons.get(page);
+        Button[] barr = pages.get(page);
         for (int i = 0; i < barr.length; i++) {
             if (barr[i] != null) inventory.setItem(i, barr[i].getItem());
         }
@@ -163,10 +169,10 @@ public abstract class Base extends Component implements InventoryHolder {
     }
 
     /**
-     * Automatically adds in previous, next, and close buttons
+     * Automatically adds in previous, next, and close pages
      */
     public void addDefaultButtons() {
-        int pages = this.buttons.size();
+        int pages = this.pages.size();
         LinkedList<Integer> enumerated = new LinkedList<>();
         for (int i = 0; i < pages; i++) enumerated.add(i);
 
@@ -211,9 +217,9 @@ public abstract class Base extends Component implements InventoryHolder {
     public void changePage(HumanEntity entity, int page) {
         Inventory inventory = entity.getOpenInventory().getTopInventory();
         if (inventory.getHolder() instanceof Base
-                && (page < buttons.size() && page >= 0)) {
+                && (page < pages.size() && page >= 0)) {
             this.setProperty(entity.getUniqueId().toString(), page);
-            Button[] barr = buttons.get(page);
+            Button[] barr = pages.get(page);
             for (int i = 0; i < barr.length; i++) {
                 if (barr[i] != null) inventory.setItem(i, barr[i].getItem());
                 else inventory.setItem(i, null);
@@ -266,10 +272,10 @@ public abstract class Base extends Component implements InventoryHolder {
      * @return the old button that was at the page and slot
      */
     public Button setIcon(int page, int slot, Button button) {
-        while (page >= buttons.size()) {
-            buttons.add(new Button[size.toInt()]);
+        while (page >= pages.size()) {
+            pages.add(new Button[size.toInt()]);
         }
-        Button[] barr = buttons.get(page);
+        Button[] barr = pages.get(page);
         Button old = barr[slot];
         barr[slot] = button;
         return old;
@@ -291,6 +297,37 @@ public abstract class Base extends Component implements InventoryHolder {
         return buttons;
     }
 
+    public void addIcon(Button button) {
+        addIcon(button, true);
+    }
+
+    /**
+     * Automatically adds a button to the inventory without considering page or slots.
+     *
+     * @param button
+     * @param override replace the button if true, finds empty space if false.
+     */
+    public void addIcon(Button button, boolean override) {
+        final int USABLE = this.size.toInt() - (hasDefaultButtons ? Var.ITEMS_PER_ROW : 0);
+        int page = raw / USABLE;
+
+        if (!override)
+            while (getIcon(page, raw % USABLE).isPresent())
+                raw++;
+
+        setIcon(page, raw % USABLE, button);
+        raw++;
+    }
+
+    /**
+     * Used for {@link #addIcon(Button)} for positional use.
+     *
+     * @return raw
+     */
+    public int getRaw() {
+        return this.raw;
+    }
+
     public void attach(Button button) {
         observers.add(button);
     }
@@ -302,8 +339,8 @@ public abstract class Base extends Component implements InventoryHolder {
      * @return {@link Button}
      */
     public Optional<Button> getIcon(int page, int slot) {
-        if (is(slot)) {
-            return Optional.ofNullable(buttons.get(page)[slot]);
+        if (page < pages.size() && is(slot)) {
+            return Optional.ofNullable(pages.get(page)[slot]);
         }
         return Optional.empty();
     }
