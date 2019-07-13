@@ -302,7 +302,7 @@ public abstract class Base extends Component implements InventoryHolder {
      * @return {@link Button}
      */
     public Optional<Button> getIcon(int page, int slot) {
-        if (slot < buttons.size()) {
+        if (is(slot)) {
             return Optional.ofNullable(buttons.get(page)[slot]);
         }
         return Optional.empty();
