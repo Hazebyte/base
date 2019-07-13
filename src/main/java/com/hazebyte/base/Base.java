@@ -224,6 +224,9 @@ public abstract class Base extends Component implements InventoryHolder {
                 if (barr[i] != null) inventory.setItem(i, barr[i].getItem());
                 else inventory.setItem(i, null);
             }
+
+            // In case any items were added, we need to update the default navigation buttons
+            if (hasDefaultButtons) this.addDefaultButtons();
         }
     }
 
