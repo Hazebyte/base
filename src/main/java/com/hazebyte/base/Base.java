@@ -216,17 +216,18 @@ public abstract class Base extends Component implements InventoryHolder {
 
     public void changePage(HumanEntity entity, int page) {
         Inventory inventory = entity.getOpenInventory().getTopInventory();
+
         if (inventory.getHolder() instanceof Base
                 && (page < pages.size() && page >= 0)) {
+            // In any case that items were added, we need to update the default navigation buttons
+            if (hasDefaultButtons) this.addDefaultButtons();
+
             this.setProperty(entity.getUniqueId().toString(), page);
             Button[] barr = pages.get(page);
             for (int i = 0; i < barr.length; i++) {
                 if (barr[i] != null) inventory.setItem(i, barr[i].getItem());
                 else inventory.setItem(i, null);
             }
-
-            // In case any items were added, we need to update the default navigation buttons
-            if (hasDefaultButtons) this.addDefaultButtons();
         }
     }
 
