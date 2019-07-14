@@ -266,6 +266,19 @@ public abstract class Base extends Component implements InventoryHolder {
         return setIcon(0, slot, button);
     }
 
+    public void moveIcon(int page, int slot, int newPage, int newSlot) {
+        if (page == newPage && slot == newSlot) return;
+        if (page > pages.size()) throw new IndexOutOfBoundsException();
+        while (newPage > pages.size()) {
+            pages.add(new Button[size.toInt()]);
+        }
+        Button[] old = pages.get(page);
+        Button[] newer = pages.get(newPage);
+
+        newer[newSlot] = old[slot];
+        old[slot] = null;
+    }
+
     /**
      * Sets the icon for the Base. The slot should be within the size limit.
      * The button may be null.
@@ -409,4 +422,5 @@ public abstract class Base extends Component implements InventoryHolder {
     public boolean is(int rawSlot) {
         return rawSlot < size.toInt();
     }
+
 }
