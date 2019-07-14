@@ -423,4 +423,34 @@ public abstract class Base extends Component implements InventoryHolder {
         return rawSlot < size.toInt();
     }
 
+    public void shiftRowLeft(int startPage, int startPos, int endPage, int endPos) {
+        int currentPage = startPage;
+        int currentPos = startPos;
+        while (currentPage < endPage + 1 && currentPos < endPos) {
+            if ((currentPage + 1) < pages.size() && currentPos != 0 && currentPos % 8 == 0) {
+                moveIcon(currentPage + 1, 0, currentPage, currentPos);
+                if (pages.get(currentPage).length == 0) pages.remove(currentPage);
+                currentPage++;
+                currentPos = 0;
+            } else {
+                moveIcon(currentPage, currentPos + 1, currentPage, currentPos);
+                currentPos++;
+            }
+        }
+    }
+
+    public void shiftRowRight(int startPage, int startPos, int endPage, int endPos) {
+        int currentPage = endPage;
+        int currentPos = endPos;
+        while (currentPage >= endPage && currentPos > endPos) {
+            if ((currentPage - 1) >= 0 && currentPos == 0) {
+                moveIcon(currentPage - 1, 8, currentPage, currentPos);
+                currentPage--;
+                currentPos = 8;
+            } else {
+                moveIcon(currentPage, currentPos, currentPage, currentPos + 1);
+                currentPos--;
+            }
+        }
+    }
 }
