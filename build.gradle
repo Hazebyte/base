@@ -5,7 +5,6 @@ plugins {
     id 'maven-publish'
 }
 
-apply plugin: 'maven'
 group 'com.hazebyte'
 version '0.0.0'
 
