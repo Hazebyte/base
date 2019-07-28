@@ -360,6 +360,7 @@ public abstract class Base extends Component implements InventoryHolder {
      * @param event
      */
     public void onInventoryClick(InventoryClickEvent event) {
+        if(event.getClickedInventory() == null) return;
         int slot = event.getRawSlot();
         int page = this.getProperty(event.getWhoClicked().getUniqueId().toString(), 0);
         getIcon(page, slot).ifPresent((button) -> {
