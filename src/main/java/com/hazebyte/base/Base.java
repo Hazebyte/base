@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -249,14 +250,18 @@ public abstract class Base extends Component implements InventoryHolder {
     }
 
     private void startTask(final HumanEntity entity) {
-        Bukkit.getScheduler().runTaskTimer(plugin, bukkitTask -> {
-            Inventory inventory = entity.getOpenInventory().getTopInventory();
-            if (inventory.getHolder() instanceof Base && inventory.getViewers().size() > 0) {
-                inventory.getViewers().forEach(this::update);
-            } else {
-                if (!bukkitTask.isCancelled()) bukkitTask.cancel();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Inventory inventory = entity.getOpenInventory().getTopInventory();
+                if (inventory.getHolder() instanceof Base && inventory.getViewers().size() > 0) {
+                    inventory.getViewers().forEach(Base.this::update);
+                } else {
+                    if (!bukkitTask.isCancelled()) bukkitTask.cancel();
+                }
             }
-        }, 1, 1);
+        }.runTaskTimer(plugin, 1, 1);
     }
 
     /**
@@ -369,6 +374,8 @@ public abstract class Base extends Component implements InventoryHolder {
      * @param event
      */
     public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getClickedInventory() == null) return;
+        if (event.getRawSlot() < 0) return;
         int slot = event.getRawSlot();
         int page = this.getProperty(event.getWhoClicked().getUniqueId().toString(), 0);
         getIcon(page, slot).ifPresent((button) -> {
