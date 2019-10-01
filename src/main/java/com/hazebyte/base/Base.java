@@ -257,6 +257,8 @@ public abstract class Base extends Component implements InventoryHolder {
                 Inventory inventory = entity.getOpenInventory().getTopInventory();
                 if (inventory.getHolder() instanceof Base && inventory.getViewers().size() > 0) {
                     inventory.getViewers().forEach(Base.this::update);
+                } else {
+                    cancel();
                 }
             }
         }.runTaskTimer(plugin, 1, 1);
