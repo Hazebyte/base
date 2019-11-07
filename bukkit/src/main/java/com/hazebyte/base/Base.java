@@ -360,11 +360,23 @@ public abstract class Base extends Component implements InventoryHolder {
      * Returns the button at the page and slot.
      * @param page
      * @param slot
-     * @return {@link Button}
+     * @return Returns the icon otherwise an empty optional
      */
     public Optional<Button> getIcon(int page, int slot) {
         if (page < pages.size() && is(slot)) {
             return Optional.ofNullable(pages.get(page)[slot]);
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Returns all icons on a page
+     * @param page
+     * @return The list of icons otherwise an empty optional
+     */
+    public Optional<Button[]> getIcons(int page) {
+        if (page < pages.size()) {
+            return Optional.ofNullable(pages.get(page));
         }
         return Optional.empty();
     }
