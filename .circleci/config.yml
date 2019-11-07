@@ -23,6 +23,7 @@ jobs:
     steps:
       - checkout
 
+      - run: mkdir -p /tmp/artifacts
       - run: mvn
       - run: mvn dependency:copy
       - run: mv jars/*.jar /tmp/artifacts
