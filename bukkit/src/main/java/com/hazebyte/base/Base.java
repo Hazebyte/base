@@ -258,7 +258,9 @@ public abstract class Base extends Component implements InventoryHolder {
                 if (inventory.getHolder() instanceof Base && inventory.getViewers().size() > 0) {
                     inventory.getViewers().forEach(Base.this::update);
                 } else {
-                    if (!bukkitTask.isCancelled()) bukkitTask.cancel();
+                    // Support 1.8
+                    int taskId = this.getTaskId();
+                    Bukkit.getScheduler().cancelTask(taskId);
                 }
             }
         }.runTaskTimer(plugin, 1, 1);

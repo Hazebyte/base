@@ -1,4 +1,4 @@
-package com.hazebyte.example;
+package com.hazebyte;
 
 import com.hazebyte.base.Base;
 import com.hazebyte.base.Button;
