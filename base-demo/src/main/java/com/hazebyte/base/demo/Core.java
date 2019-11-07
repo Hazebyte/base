@@ -1,4 +1,4 @@
-package com.hazebyte;
+package com.hazebyte.base.demo;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
