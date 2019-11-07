@@ -24,6 +24,7 @@ jobs:
       - checkout
 
       - run: mvn
+      - run: mvn dependency:copy
       - run: mv jars/*.jar /tmp/artifacts
       - store_artifacts:
           path: /tmp/artifacts
