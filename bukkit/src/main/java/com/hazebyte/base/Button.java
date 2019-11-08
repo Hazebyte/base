@@ -7,10 +7,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -21,6 +18,9 @@ public class Button extends Component {
     private final ItemStack original;
     private ItemStack item;
     private final String DEFAULT = "default";
+
+    // Dirty Writes
+    private final Set<String> dirtyWrites = new HashSet<>();
 
     /**
      * Creates a button with a item icon.
@@ -71,39 +71,52 @@ public class Button extends Component {
 
     /**
      * @param entity
-     * @param key
+     * @param state
      */
     @Override
-    protected void onUpdate(HumanEntity entity, String key) {
+    protected void onUpdate(HumanEntity entity, String state) {
         Base base = this.getProperty("menu");
         if (base == null) return;
 
+        // Add dirty keys
+        Object tmp = base.getState(state, this.getState(state));
+        if (tmp == null) {
+            dirtyWrites.remove(state);
+        } else {
+            dirtyWrites.add(state);
+        }
+
         ItemMeta meta = original.clone().getItemMeta();
 
-        if (key.equals("%name")) {
-            String value = base.getState(key, this.getState(key, "Missing %name value"));
-            meta.setDisplayName(value);
-        }
-        if (key.equals("%lore")) {
-            List<String> arr = base.getState(key, this.getState(key, Arrays.asList("Missing %lore value")));
-            meta.setLore(arr);
-        }
-        if (key.equals("%amount")) {
-            int amount = base.getState(key, this.getState(key, 1));
-            item.setAmount(amount);
-        }
-        if (key.equals("%material")) {
-            Material material = Material.matchMaterial(base.getState(key, this.getState(key, "dirt")));
-            item.setType(material);
-        }
+        for (String K: dirtyWrites) {
+            System.out.println(K);
+            if (K.equals("%name")) {
+                String value = base.getState(K, this.getState(K, "Missing %name value"));
+                meta.setDisplayName(value);
+            }
+            if (K.equals("%lore")) {
+                List<String> arr = base.getState(K, this.getState(K, Arrays.asList("Missing %lore value")));
+                meta.setLore(arr);
+            }
+            if (K.equals("%amount")) {
+                int amount = base.getState(K, this.getState(K, 1));
+                item.setAmount(amount);
+            }
+            if (K.equals("%material")) {
+                Material material = Material.matchMaterial(base.getState(K, this.getState(K, "dirt")));
+                item.setType(material);
+            }
 
-        for (Map.Entry<String, Object> entry : states.entrySet()) {
-            replace(meta, entry);
+            for (Map.Entry<String, Object> entry : states.entrySet()) {
+                replace(meta, entry);
+            }
+            for (Map.Entry<String, Object> entry : base.states.entrySet()) {
+                replace(meta, entry);
+            }
         }
-        for (Map.Entry<String, Object> entry : base.states.entrySet()) {
-            replace(meta, entry);
-        }
+        System.out.println(meta);
         item.setItemMeta(meta);
+
     }
 
     private void replace(ItemMeta meta, Map.Entry<String, Object> entry) {
@@ -113,13 +126,16 @@ public class Button extends Component {
             meta.setDisplayName(meta.getDisplayName().replaceAll(K, V));
         }
         if (meta.getLore() != null) {
-            ListIterator<String> iter = meta.getLore().listIterator();
+            List<String> list = meta.getLore();
+            ListIterator<String> iter = list.listIterator();
             while (iter != null && iter.hasNext()) {
                 String lore = iter.next();
                 if (lore.contains(K)) {
-                    iter.set(lore.replaceAll(K, V));
+                    String replaced = lore.replaceAll(K, V);
+                    iter.set(replaced);
                 }
             }
+            meta.setLore(list);
         }
     }
 }

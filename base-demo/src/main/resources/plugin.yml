@@ -1,4 +1,4 @@
-main: com.hazebyte.example.Core
+main: com.hazebyte.base.demo.Core
 name: BaseTest
 version: '0.0.0'
 description: An example plugin for the library, Base
