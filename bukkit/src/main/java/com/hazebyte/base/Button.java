@@ -89,7 +89,6 @@ public class Button extends Component {
         ItemMeta meta = original.clone().getItemMeta();
 
         for (String K: dirtyWrites) {
-            System.out.println(K);
             if (K.equals("%name")) {
                 String value = base.getState(K, this.getState(K, "Missing %name value"));
                 meta.setDisplayName(value);
@@ -114,7 +113,6 @@ public class Button extends Component {
                 replace(meta, entry);
             }
         }
-        System.out.println(meta);
         item.setItemMeta(meta);
 
     }
