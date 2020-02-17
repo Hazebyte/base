@@ -126,4 +126,15 @@
       </plugin>
     </plugins>
   </build>
+
+  <distributionManagement>
+    <repository>
+      <id>myMavenRepoWrite</id>
+      <url>${myMavenRepoWriteUrl}</url>
+    </repository>
+    <snapshotRepository>
+      <id>myMavenRepoWrite</id>
+      <url>${myMavenRepoWriteUrl}</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
