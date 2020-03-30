@@ -5,6 +5,13 @@ package com.hazebyte.base;
  */
 public class Size {
 
+    public static final Size ONE = new Size(1),
+        TWO = new Size(2),
+        THREE = new Size(3),
+        FOUR = new Size(4),
+        FIVE = new Size(5),
+        SIX = new Size(6);
+
     private int size;
 
     private Size(int rows) {

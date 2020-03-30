@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.hazebyte.base.event.ButtonClickEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -37,6 +38,10 @@ public class Button extends Component {
         run(DEFAULT, bce);
     }
 
+    public void run(ClickType clickType, ButtonClickEvent bce) {
+        run(clickType.name(), bce);
+    }
+
     public void run(String action, ButtonClickEvent bce) {
         Consumer<ButtonClickEvent> consumer = this.getProperty(action);
         if (consumer != null) consumer.accept(bce);
@@ -49,6 +54,10 @@ public class Button extends Component {
      */
     public void setAction(Consumer<ButtonClickEvent> consumer) {
         setProperty(DEFAULT, consumer);
+    }
+
+    public void setAction(ClickType type, Consumer<ButtonClickEvent> consumer) {
+        setAction(type.name(), consumer);
     }
 
     /**

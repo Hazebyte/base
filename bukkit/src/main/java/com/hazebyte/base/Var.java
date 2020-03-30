@@ -9,4 +9,7 @@ public interface Var {
     int RIGHT_CENTER = 4;
     int FROM_CENTER = 5;
     int LEFT_CENTER = 6;
+
+    int LEFT_SHIFTED = 8;
+    int RIGHT_SHIFTED = 2;
 }

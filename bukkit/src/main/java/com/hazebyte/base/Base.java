@@ -2,9 +2,7 @@ package com.hazebyte.base;
 
 import com.google.common.base.Preconditions;
 import com.hazebyte.base.event.ButtonClickEvent;
-import com.hazebyte.base.foundation.CloseButton;
-import com.hazebyte.base.foundation.NextButton;
-import com.hazebyte.base.foundation.PreviousButton;
+import com.hazebyte.base.foundation.*;
 import com.hazebyte.base.util.Lib;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
@@ -58,21 +56,37 @@ public abstract class Base extends Component implements InventoryHolder {
      */
     private int raw = 0;
 
+    /**
+     * The parent is the inventory that is the predecessor to this menu.
+     * The child is the inventory that is opened after this menu.
+     */
+    private Base child, parent;
+
     public Base(JavaPlugin plugin, String title, Size size) {
         this(plugin, title, size, true);
     }
 
     public Base(JavaPlugin plugin, String title, Size size, boolean hasDefaultButtons) {
+        this(plugin, title, size, hasDefaultButtons, true);
+    }
+
+    public Base(JavaPlugin plugin, String title, Size size, boolean hasDefaultButtons, boolean autoResize) {
         Preconditions.checkNotNull(plugin, "Plugin is null");
         Preconditions.checkNotNull(title, "Title is null");
         Preconditions.checkNotNull(size, "Size is null");
         this.plugin = plugin;
-        this.size = size;
+        this.size = size.equals(Size.ONE) && hasDefaultButtons && autoResize ?
+                Size.from(size.toInt() + Size.ONE.toInt()) :
+                size;
         this.title = title;
         this.pages = new ArrayList<>();
-        this.pages.add(new Button[size.toInt()]);
+        this.pages.add(new Button[this.size.toInt()]);
         this.observers = new ArrayList<>();
         this.hasDefaultButtons = hasDefaultButtons; // Calls #addDefaultButtons on open to perform calculations
+
+        if (this.size.equals(Size.ONE) && hasDefaultButtons)
+                throw new IllegalArgumentException("There is no space to add items to this inventory.\n" +
+                        "Consider increasing the size of this inventory.");
     }
 
     @Override
@@ -186,6 +200,13 @@ public abstract class Base extends Component implements InventoryHolder {
             int last = enumerated.removeLast();
             setIcon(enumerated.toArray(new Integer[enumerated.size()]), size.toInt() - Var.RIGHT_CENTER, new NextButton());
         }
+
+        if (hasParent()) {
+            setIcon(enumerated.toArray(new Integer[enumerated.size()]), size.toInt() - Var.LEFT_SHIFTED, new NextMenuButton(getParent()));
+        }
+        if (hasChild()) {
+            setIcon(enumerated.toArray(new Integer[enumerated.size()]), size.toInt() - Var.LEFT_SHIFTED, new PreviousMenuButton(getChild()));
+        }
     }
 
     /**
@@ -247,6 +268,50 @@ public abstract class Base extends Component implements InventoryHolder {
             }
         }
         return false;
+    }
+
+    /**
+     * Set the menu that this menu should go back to
+     */
+    public void setParent(Base base) {
+        this.parent = base;
+        addDefaultButtons();
+    }
+
+    /**
+     * Returns the menu to go back to
+     */
+    public Base getParent() {
+        return parent;
+    }
+
+    /**
+     * Set the menu that this menu should go forward to
+     */
+    public void setChild(Base base) {
+        this.child = base;
+        addDefaultButtons();
+    }
+
+    /**
+     * Returns the menu to go forward to
+     */
+    public Base getChild() {
+        return child;
+    }
+
+    /**
+     * Returns if this has a menu to go back to
+     */
+    public boolean hasParent() {
+        return parent != null;
+    }
+
+    /**
+     * Returns if this has a menu to go forward to
+     */
+    public boolean hasChild() {
+        return child != null;
     }
 
     private void startTask(final HumanEntity entity) {
