@@ -1,10 +1,11 @@
 # base
 
-base is a spigot library to build interfaces. It supports paginated and stateful inventories. 
+base is a spigot library to build interfaces. It supports in-menu pagination, navigation between different menus, and stateful inventories. 
 
 * All interfaces have their own state
 * Highly interactive experience for end users
 * Easy and efficient pagination
+* Automated parent-child navigation setup between different menus
 
 ## Example
 
