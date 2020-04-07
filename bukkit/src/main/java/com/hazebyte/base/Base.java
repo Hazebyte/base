@@ -209,6 +209,11 @@ public abstract class Base extends Component implements InventoryHolder {
         }
     }
 
+    public int getPage(HumanEntity entity) {
+        int page = this.getProperty(entity.getUniqueId().toString(), 0);
+        return page;
+    }
+
     /**
      * Opens the next page for the entity. This will reuse the inventory that is already
      * open. Ensure that this is called within a {@link Base} otherwise
@@ -216,8 +221,8 @@ public abstract class Base extends Component implements InventoryHolder {
      * @param entity the entity to switch pages.
      */
     public void nextPage(HumanEntity entity) {
-        int page = this.getProperty(entity.getUniqueId().toString(), 0) + 1;
-        changePage(entity, page);
+        int page = getPage(entity);
+        changePage(entity, page + 1);
     }
 
     /**
@@ -227,12 +232,12 @@ public abstract class Base extends Component implements InventoryHolder {
      * @param entity the entity to switch pages
      */
     public void previousPage(HumanEntity entity) {
-        int page = this.getProperty(entity.getUniqueId().toString(), 0) - 1;
-        changePage(entity, page);
+        int page = getPage(entity);
+        changePage(entity, page - 1);
     }
 
     public void updatePage(HumanEntity entity) {
-        int page = this.getProperty(entity.getUniqueId().toString(), 0);
+        int page = getPage(entity);
         changePage(entity, page);
     }
 
