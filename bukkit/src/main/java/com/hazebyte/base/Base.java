@@ -75,7 +75,7 @@ public abstract class Base extends Component implements InventoryHolder {
         Preconditions.checkNotNull(title, "Title is null");
         Preconditions.checkNotNull(size, "Size is null");
         this.plugin = plugin;
-        this.size = size.equals(Size.ONE) && hasDefaultButtons && autoResize ?
+        this.size = hasDefaultButtons && autoResize ?
                 Size.from(size.toInt() + Size.ONE.toInt()) :
                 size;
         this.title = title;
