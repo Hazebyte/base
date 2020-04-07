@@ -189,23 +189,25 @@ public abstract class Base extends Component implements InventoryHolder {
     public void addDefaultButtons() {
         int pages = this.pages.size();
         LinkedList<Integer> enumerated = new LinkedList<>();
-        for (int i = 0; i < pages; i++) enumerated.add(i);
+        for (int i = 0; i < pages; i++) enumerated.offer(i);
 
-        setIcon(enumerated.toArray(new Integer[enumerated.size()]), size.toInt() - Var.FROM_CENTER, new CloseButton());
+        Integer[] allPages = enumerated.toArray(new Integer[enumerated.size()]);
+        setIcon(allPages, size.toInt() - Var.FROM_CENTER, new CloseButton());
         if (pages > 0) {
             int first = enumerated.removeFirst();
             setIcon(enumerated.toArray(new Integer[enumerated.size()]), size.toInt() - Var.LEFT_CENTER, new PreviousButton());
-            enumerated.addFirst(first);
+            enumerated.offerFirst(first);
 
             int last = enumerated.removeLast();
             setIcon(enumerated.toArray(new Integer[enumerated.size()]), size.toInt() - Var.RIGHT_CENTER, new NextButton());
+            enumerated.offerLast(last);
         }
 
         if (hasParent()) {
-            setIcon(enumerated.toArray(new Integer[enumerated.size()]), size.toInt() - Var.LEFT_SHIFTED, new NextMenuButton(getParent()));
+            setIcon(allPages, size.toInt() - Var.LEFT_SHIFTED, new PreviousMenuButton(getParent()));
         }
         if (hasChild()) {
-            setIcon(enumerated.toArray(new Integer[enumerated.size()]), size.toInt() - Var.LEFT_SHIFTED, new PreviousMenuButton(getChild()));
+            setIcon(allPages, size.toInt() - Var.RIGHT_SHIFTED, new NextMenuButton(getChild()));
         }
     }
 

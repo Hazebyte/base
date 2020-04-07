@@ -6,7 +6,8 @@ import com.hazebyte.base.util.Lib;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * Represents a button to go to a new menu
+ * Represents a button to go to a new menu.
+ * This will setup a parent and child relationship.
  */
 public class MenuButton extends Button {
 

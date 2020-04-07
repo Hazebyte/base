@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Represents a button to go to a new menu
  */
-public class NextMenuButton extends MenuButton {
+public class NextMenuButton extends StaticMenuButton {
 
     private static final ItemStack DEFAULT = new ItemBuilder(Material.ARROW)
             .displayName("&l&4Next Menu")
