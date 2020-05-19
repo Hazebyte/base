@@ -12,4 +12,6 @@ public interface Var {
 
     int LEFT_SHIFTED = 8;
     int RIGHT_SHIFTED = 2;
+    int LEFT = 9;
+    int RIGHT = 0;
 }

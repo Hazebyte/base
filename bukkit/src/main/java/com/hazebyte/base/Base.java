@@ -3,12 +3,15 @@ package com.hazebyte.base;
 import com.google.common.base.Preconditions;
 import com.hazebyte.base.event.ButtonClickEvent;
 import com.hazebyte.base.foundation.*;
+import com.hazebyte.base.util.ItemBuilder;
 import com.hazebyte.base.util.Lib;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -203,11 +206,17 @@ public abstract class Base extends Component implements InventoryHolder {
             enumerated.offerLast(last);
         }
 
-        if (hasParent()) {
+        final ItemStack backBtn = new ItemBuilder(Material.COMPASS)
+                .displayName("&lBack")
+                .asItemStack();
+
+        if (hasParent() && hasChild()) {
             setIcon(allPages, size.toInt() - Var.LEFT_SHIFTED, new PreviousMenuButton(getParent()));
-        }
-        if (hasChild()) {
             setIcon(allPages, size.toInt() - Var.RIGHT_SHIFTED, new NextMenuButton(getChild()));
+        } else if (hasParent()) {
+            setIcon(allPages, size.toInt() - Var.LEFT, new PreviousMenuButton(backBtn, getParent()));
+        } else if (hasChild()) {
+            setIcon(allPages, size.toInt() - Var.LEFT, new NextMenuButton(backBtn, getChild()));
         }
     }
 
